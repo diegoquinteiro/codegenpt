@@ -7,7 +7,7 @@ from codegenpt.generators.file_generator import generate_file
 
 
 @click.command()
-@click.option('--recursive', default=True, help='Find .codegenpt files in directories recursevily.')
+@click.option('--recursive', '-R', is_flag=True, default=False, help='Find .codegenpt files in directories recursevily.')
 @click.argument('path', default='.', type=click.Path(exists=True))
 def cli(recursive, path):
     codegenpt(recursive=recursive, path=path)
