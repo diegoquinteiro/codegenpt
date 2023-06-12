@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "codegenpt"
+version = "0.1.0"
+description = "Autogenerate files and folders using ChatGPT API"
+authors = ["Diego Quinteiro <diegoquinteiro@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+openai = "^0.27.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
