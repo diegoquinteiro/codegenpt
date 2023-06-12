@@ -12,7 +12,7 @@ def test_find_codegenpt_files_non_recursively():
     assert len(files) == 0
 
 def test_find_codegenpt_files_with_root_dir():
-    files = find_codegenpt_files(root_dir='tests/test_files')
+    files = find_codegenpt_files(path='tests/test_files')
     assert len(files) == 2
-    assert files[0].path == []
-    assert files[1].path == []
+    assert files[0].path == ['tests', 'test_files']
+    assert files[1].path == ['tests', 'test_files']
