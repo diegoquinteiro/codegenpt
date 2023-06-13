@@ -58,3 +58,45 @@ CodeGenPT expects an environment variable called `OPEN_API_KEY`.
     ```bash
     echo 'export OPENAI_API_KEY={your api key}' >> ~/.zshenv && source ~/.zshenv
 
+## Commands
+Commands are special instructions you can use to instruct the generation process.
+
+All codegenpt commands are placed in a single line in the format:
+```
+@cogenpt.command_name args...
+```
+
+### @codegenpt.include
+Includes one or more files on the context.
+Included files can be referenced using `@filename.ext` in the generation instructions
+
+Example: 
+
+`names.txt`:
+```
+Diego
+Alberto
+Daniel
+```
+
+`random_name.js.codegenpt`:
+```
+@codegenpt.include assets/names.txt
+
+Read @names.txt and write a function that returns one of the names
+```
+
+`random_name.js`:
+```js
+function getRandomName() {
+  const names = [
+    'Diego',
+    'Alberto',
+    'Daniel'
+  ];
+
+  const randomIndex = Math.floor(Math.random() * names.length);
+
+  return names[randomIndex];
+}
+```
