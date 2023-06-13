@@ -1,5 +1,6 @@
 from os import path
 
+from codegenpt.commands.command import Command
 
 class CodeGenPTFile:
 
@@ -13,8 +14,25 @@ class CodeGenPTFile:
     
     @property
     def prompt(self):
-        with (self.__file) as file:
-            return ''.join(file.readlines())
+        with open(self.__filename, 'r') as file:
+            prompt_lines = list(filter(lambda line: not line.startswith('@codegenpt.'), file.readlines()))
+            # Filter first lines if they are empty or whitespace
+            while prompt_lines[0].strip() == '':
+                prompt_lines.pop(0)
+
+        return ''.join(prompt_lines)
+
+    @property
+    def commands(self):
+        with open(self.__filename, 'r') as file:
+            commands = list(map(
+                lambda line: Command(
+                    name = line.strip().split(' ')[0].replace('@codegenpt.', ''),
+                    arguments = line.strip().split(' ')[1:]
+                ),
+                list(filter(lambda line: line.startswith('@codegenpt.'), file.readlines()))
+            ))
+        return commands
         
     @property
     def path(self):
@@ -34,17 +52,7 @@ class CodeGenPTFile:
 
     def __init__(self, filename):
         self.__filename = filename
-        self.__file = None
-        self.file = None
-
-    def __enter__(self):
-        self.__file = open(self.__filename, 'r')
-        self.file = open(self.filename, 'w+')
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.__file.close()
 
     def write(self, content):
-        with self.file as file:
+        with open(self.filename, "w+") as file:
             file.write(content)

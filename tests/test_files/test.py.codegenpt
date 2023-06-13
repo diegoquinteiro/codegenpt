@@ -1,2 +1,3 @@
-Generate a hello world program.
-It should print a joke.
+@codegenpt.include jokes.txt
+
+Read the @jokes.txt file and generate a program that outputs the second joke.

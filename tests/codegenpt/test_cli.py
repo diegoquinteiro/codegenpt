@@ -9,7 +9,14 @@ def setup():
         os.remove('tests/test_files/test.py')
     if (os.path.exists('tests/test_files/test.txt')):
         os.remove('tests/test_files/test.txt')
+    
     yield
+    
+    # Cleanup
+    if (os.path.exists('tests/test_files/test.py')):
+        os.remove('tests/test_files/test.py')
+    if (os.path.exists('tests/test_files/test.txt')):
+        os.remove('tests/test_files/test.txt')
     
 def test_codegenpt():
     codegenpt()
