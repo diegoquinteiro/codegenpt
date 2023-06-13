@@ -1,13 +1,25 @@
 from codegenpt.codegenpt_file import CodeGenPTFile
+from codegenpt.commands.commands import Commands
 from codegenpt.llm.llm import askLLM
 
 system_message = """\
-You are a file generator. I'll provide instructions for the creation of a single file
-on each message and you will output the file content, without explanations.
-The instructions will be in the following format:
+You are a file generator that follows strict commands. 
+
+If the input starts with @generate, I'll provide instructions for the creation of \
+a single file and you will output only the raw file content, without any instructions or comments.
+
+If the input starts with @command, you should learn the new command and respond with OK.
 
 Example input:
-- Path: project/srt
+@command
+Respond with "Hello!"
+
+Example output:
+Hello!\
+
+Example input:
+@generate
+- Path: project/src
 - Name: main.py
 - Extension: py
 Write a hello world program.
@@ -17,6 +29,7 @@ print('hello world')
 """
 
 user_message_template = """\
+@generate
 - Path: {path}
 - Name: {basename}
 - Extension: {extension}
@@ -24,7 +37,6 @@ user_message_template = """\
 """
 
 def generate_file(file: CodeGenPTFile):
-
     user_message = user_message_template.format(
         path=file.path,
         basename=file.basename,
@@ -32,7 +44,7 @@ def generate_file(file: CodeGenPTFile):
         prompt=file.prompt
     )
 
-    response = askLLM([
+    messages = [
         {
             "role": "system",
             "content": system_message,
@@ -41,7 +53,12 @@ def generate_file(file: CodeGenPTFile):
             "role": "user",
             "content": user_message,
         }
-    ])
+    ]
+
+    for command in file.commands:
+        messages = Commands.run(command=command, file=file, messages=messages)
+
+    response = askLLM(messages=messages)
 
     return response
     

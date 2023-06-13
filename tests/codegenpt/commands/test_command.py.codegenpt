@@ -1,0 +1,3 @@
+@codegenpt.include ../../../codegenpt/commands/command.py
+
+Generate tests using pytest for the methods in @command.py

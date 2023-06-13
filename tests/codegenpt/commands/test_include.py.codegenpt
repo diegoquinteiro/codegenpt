@@ -1,0 +1,5 @@
+@codegenpt.include ../../../codegenpt/commands/include.py
+@codegenpt.include ../../../codegenpt/commands/command.py
+@codegenpt.include ../../../codegenpt/codegenpt_file.py
+
+Generate tests using pytest for the functions in the file @include.py, mocking any filesystem calls.
