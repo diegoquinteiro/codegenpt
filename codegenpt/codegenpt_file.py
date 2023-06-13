@@ -1,4 +1,5 @@
 from os import path
+import shlex
 
 from codegenpt.commands.command import Command
 
@@ -15,7 +16,7 @@ class CodeGenPTFile:
     @property
     def prompt(self):
         with open(self.__filename, 'r') as file:
-            prompt_lines = list(filter(lambda line: not line.startswith('@codegenpt.'), file.readlines()))
+            prompt_lines = list(filter(lambda line: not line.startswith('@'), file.readlines()))
             # Filter first lines if they are empty or whitespace
             while prompt_lines[0].strip() == '':
                 prompt_lines.pop(0)
@@ -27,10 +28,10 @@ class CodeGenPTFile:
         with open(self.__filename, 'r') as file:
             commands = list(map(
                 lambda line: Command(
-                    name = line.strip().split(' ')[0].replace('@codegenpt.', ''),
-                    arguments = line.strip().split(' ')[1:]
+                    name = line.strip().split(' ')[0].replace('@', ''),
+                    arguments = shlex.split(line.strip())[1:]
                 ),
-                list(filter(lambda line: line.startswith('@codegenpt.'), file.readlines()))
+                list(filter(lambda line: line.startswith('@'), file.readlines()))
             ))
         return commands
         

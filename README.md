@@ -25,7 +25,7 @@ $ codegenpt helloworld.py.codegenpt
 🍻 Success
 ```
 
-Will generate a file name `helloworld.py`:
+Will generate a file named `helloworld.py`:
 ```python
 print("hello world");
 ```
@@ -63,10 +63,10 @@ Commands are special instructions you can use to instruct the generation process
 
 All codegenpt commands are placed in a single line in the format:
 ```
-@cogenpt.command_name args...
+@command_name args...
 ```
 
-### @codegenpt.include
+### @include
 Includes one or more files on the context.
 Included files can be referenced using `@filename.ext` in the generation instructions
 
@@ -81,7 +81,7 @@ Daniel
 
 `random_name.js.codegenpt`:
 ```
-@codegenpt.include assets/names.txt
+@include assets/names.txt
 
 Read @names.txt and write a function that returns one of the names
 ```

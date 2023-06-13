@@ -1,16 +1,22 @@
+```python
 import pytest
-from unittest.mock import MagicMock
 from codegenpt.codegenpt_file import CodeGenPTFile
-from codegenpt.commands.commands import Commands
+from commands import Commands
 
-def test_run_command_expected_method_called():
-    include_command = MagicMock()
-    include_command.name = 'include'
 
-    def include_mock(command, file, messages):
-        return ['Import generated from include command!']
+def test_register_command_runner():
+    command_name = 'test_command'
+    def command_runner(command: Command, file: CodeGenPTFile, messages):
+        return messages
+    original_command_count = len(Commands.commandRunners)
+    Commands.registerCommandRunner(command_name, command_runner)
+    assert len(Commands.commandRunners) == original_command_count + 1
 
-    Commands.registerCommandRunner('include', include_mock)
-    result = Commands.run(include_command, CodeGenPTFile('test.txt'), [])
-    assert len(result) > 0
-    assert result[0] == 'Import generated from include command!'
+def test_run():
+    file = CodeGenPTFile('')
+    message = ['example_message']
+    command = Command('include', '- File name: example_file')
+    returned_message = Commands.run(command, file, message)
+    assert message[0] == 'example_message'
+    assert returned_message == message
+```
