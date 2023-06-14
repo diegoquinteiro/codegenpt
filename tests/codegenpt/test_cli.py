@@ -1,10 +1,15 @@
 import os
-from click.testing import CliRunner
 import pytest
-from codegenpt.cli import codegenpt, cli
+from unittest.mock import MagicMock, patch
+from click.testing import CliRunner
+from codegenpt import cli
+import codegenpt.llm.llm
 
 @pytest.fixture(autouse=True)
-def setup():
+def setup(monkeypatch):
+    # Mock LLM
+    monkeypatch.setattr('codegenpt.generators.file_generator.askLLM', lambda messages: f'Respose for {messages}')
+
     if (os.path.exists('tests/test_files/test.py')):
         os.remove('tests/test_files/test.py')
     if (os.path.exists('tests/test_files/test.txt')):
@@ -17,13 +22,13 @@ def setup():
         os.remove('tests/test_files/test.py')
     if (os.path.exists('tests/test_files/test.txt')):
         os.remove('tests/test_files/test.txt')
-    
-def test_codegenpt():
-    codegenpt()
+
+def test_codegenpt(monkeypatch):
+    cli.codegenpt(path='tests/test_files', force=False)
     assert os.path.exists('tests/test_files/test.py')
     assert os.path.exists('tests/test_files/test.txt')
 
-def test_cli():
+def test_cli(monkeypatch):
     runner = CliRunner()
-    result = runner.invoke(cli)
+    result = runner.invoke(cli.cli, ['-R', 'tests/test_files'])
     assert result.exit_code == 0

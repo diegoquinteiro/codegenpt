@@ -1,27 +1,14 @@
-import os
-from ..commands.command import Command
+from codegenpt.commands.command import Command
 
-def test_equality():
-    command1 = Command("create")
-    command2 = Command("create")
-    assert command1 == command2
+def test_command_equality():
+    assert Command("hello", []) == Command("hello", [])
+    assert Command("hello", ["world"]) == Command("hello", ["world"])
+    assert not Command("hello", ["world"]) == Command("hello", [])
 
-def test_create_command():
-    command = Command("create", ["file.txt"])
-    assert command.name == "create"
-    assert command.arguments == ["file.txt"]
+def test_command_name():
+    assert Command("hello").name == "hello"
+    assert Command("world").name == "world"
 
-def test_edit_command():
-    command = Command("edit", ["file.txt"])
-    assert command.name == "edit"
-    assert command.arguments == ["file.txt"]
-
-def test_remove_command():
-    command = Command("remove", ["file.txt"])
-    assert command.name == "remove"
-    assert command.arguments == ["file.txt"]
-
-def test_execute_command():
-    command = Command("execute", ["script.sh"])
-    assert command.name == "execute"
-    assert command.arguments == ["script.sh"]
+def test_command_arguments():
+    assert Command("hello", ["world"]).arguments == ["world"]
+    assert Command("world", ["hello"]).arguments == ["hello"]

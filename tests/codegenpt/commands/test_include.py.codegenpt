@@ -2,4 +2,4 @@
 @include ../../../codegenpt/commands/command.py
 @include ../../../codegenpt/codegenpt_file.py
 
-Generate tests using pytest for the functions in the file @include.py, mocking any filesystem calls.
+Generate tests using pytest for the functions in the file @include.py mocking filesystem calls.
