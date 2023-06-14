@@ -27,7 +27,7 @@ def test_codegenpt_file_path(test_file: CodeGenPTFile):
 
 
 def test_codegenpt_file_basename(test_file: CodeGenPTFile):
-    assert test_file.filename == 'test.py'
+    assert test_file.basename == 'test.py'
 
 
 def test_codegenpt_file_context(test_file: CodeGenPTFile):

@@ -1,4 +1,4 @@
-from codegenpt.codegenpt_file import CodeGenPTFile
+from codegenpt.codegenpt_instructions import CodeGenPTInstructions
 from codegenpt.commands.command import Command
 
 command_message = '''\
@@ -35,21 +35,24 @@ assistant_message = '''\
 OK\
 '''
 
-def include(command: Command, file: CodeGenPTFile, messages):
-    command_messages = [{
-        "role": "user",
-        "content": command_message,
-    },
-    {
-        "role": "assistant",
-        "content": assistant_message
-    }
+
+def include(command: Command, instructions: CodeGenPTInstructions, messages):
+    command_messages = [
+        {
+            "role": "user",
+            "content": command_message,
+        },
+        {
+            "role": "assistant",
+            "content": assistant_message
+        }
     ]
+
     for filename in command.arguments:
         if filename.startswith('/'):
             path = filename[1:].split('/')
         else:
-            path = file.path + filename.split('/')
+            path = instructions.path + filename.split('/')
 
         with open('/'.join(path), 'r') as file:
             file_content = file.read()

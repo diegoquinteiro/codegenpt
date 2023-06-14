@@ -272,6 +272,16 @@ files = [
 ]
 
 [[package]]
+name = "demjson3"
+version = "3.0.6"
+description = "encoder, decoder, and lint/validator for JSON (JavaScript Object Notation) compliant with RFC 7159"
+optional = false
+python-versions = "*"
+files = [
+    {file = "demjson3-3.0.6.tar.gz", hash = "sha256:37c83b0c6eb08d25defc88df0a2a4875d58a7809a9650bd6eee7afd8053cdbac"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -702,4 +712,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10"
-content-hash = "28fa7e738881f1e7003eed2cc749cb327850ad91b32bd0eb7041f524f97cc682"
+content-hash = "6714624ef35a4bb81294da45aaa03298e99c9f0a108d1822effac3dcaf9cbca7"

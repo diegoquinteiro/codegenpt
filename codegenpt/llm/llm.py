@@ -1,7 +1,8 @@
 import os
 import openai
+from demjson3 import decode
 
-def askLLM(messages, retries = 3):
+def askLLM(messages, json=False, retries=3):
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     if messages is str:
@@ -16,5 +17,11 @@ def askLLM(messages, retries = 3):
     )
 
     response = completion.choices[0].message.content
+
+    if json:
+        try:
+            response = decode(response)
+        except ValueError:
+            return askLLM(messages, json, retries - 1)
 
     return response

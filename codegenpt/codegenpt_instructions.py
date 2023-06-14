@@ -1,13 +1,22 @@
 from abc import ABC, abstractmethod
 from os import path
+import os
 import shlex
 from codegenpt.commands.command import Command
 
 class CodeGenPTInstructions(ABC):
-        
+    
+    @property
+    def suffix(self):
+        return '.codegenpt'
+
+    @property
+    def basename(self):
+        return path.basename(self.fullPath)
+      
     @property
     def fullPath(self):
-        return '.'.join(self.instructions_filename.split('.')[:-1])
+        return self.instructions_filename.replace(self.suffix, '')
 
     @property
     def prompt(self):
@@ -33,7 +42,7 @@ class CodeGenPTInstructions(ABC):
         
     @property
     def path(self):
-        return self.instructions_filename.split('/')[:-1]
+        return self.instructions_filename.split(os.sep)[:-1]
         
     @property
     @abstractmethod

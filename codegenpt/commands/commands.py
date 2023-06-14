@@ -1,4 +1,4 @@
-from codegenpt.codegenpt_file import CodeGenPTFile
+from codegenpt.codegenpt_instructions import CodeGenPTInstructions
 from codegenpt.commands.include import include
 from codegenpt.commands.command import Command
 
@@ -9,9 +9,9 @@ class Commands:
     def registerCommandRunner(name, commandRunner):
         Commands.commandRunners[name] = commandRunner
 
-    def run(command: Command, file: CodeGenPTFile,  messages):
+    def run(command: Command, instructions: CodeGenPTInstructions,  messages):
         if command.name in Commands.commandRunners:
-            return Commands.commandRunners[command.name](command, file, messages)
+            return Commands.commandRunners[command.name](command, instructions, messages)
         return messages
     
 

@@ -1,5 +1,6 @@
 import glob
 import os
+from codegenpt.codegenpt_directory import CodeGenPTDirectory
 from codegenpt.codegenpt_file import CodeGenPTFile;
 
 
@@ -7,5 +8,15 @@ from codegenpt.codegenpt_file import CodeGenPTFile;
 def find_codegenpt_files(path='', recursive=True):
     return list(map(
         lambda filename: CodeGenPTFile(filename),
-        glob.glob(os.path.join(path, '**/*.codegenpt'), recursive=recursive)
+        filter(
+            lambda filename: not filename.endswith('.dir.codegenpt'),
+            glob.glob(os.path.join(path, '**/*.codegenpt'), recursive=recursive)
+        )
+    ))
+
+# Find all codegenpt directories in the given root directory
+def find_codegenpt_directories(path='', recursive=True):
+    return list(map(
+        lambda dirname: CodeGenPTDirectory(dirname),
+        glob.glob(os.path.join(path, '**/*.dir.codegenpt'), recursive=recursive)
     ))

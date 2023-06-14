@@ -39,7 +39,7 @@ user_message_template = """\
 def generate_file(file: CodeGenPTFile):
     user_message = user_message_template.format(
         path=file.path,
-        basename=file.filename,
+        basename=file.basename,
         extension=file.extension,
         prompt=file.prompt
     )
@@ -56,7 +56,7 @@ def generate_file(file: CodeGenPTFile):
     ]
 
     for command in file.commands:
-        messages = Commands.run(command=command, file=file, messages=messages)
+        messages = Commands.run(command=command, instructions=file, messages=messages)
 
     response = askLLM(messages=messages)
 

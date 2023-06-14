@@ -7,16 +7,12 @@ class CodeGenPTFile(CodeGenPTInstructions):
 
     @property
     def extension(self):
-        return self.filename.split('.')[-1]
-    
-    @property
-    def filename(self):
-        return path.basename(self.fullPath)
+        return self.basename.split('.')[-1]
         
     @property
     def context(self):
         return {
-            'filename': self.filename,
+            'filename': self.basename,
             'extension': self.extension,
             'path': self.path,
         }
