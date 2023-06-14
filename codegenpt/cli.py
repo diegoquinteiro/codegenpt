@@ -32,12 +32,12 @@ def codegenpt(recursive=True, force=True, path='.'):
     click.echo(f"🍻 Success")
 
 def generate(file: CodeGenPTFile, force=True):
-    if os.path.exists(file.filename) and not force:
-        click.echo(f"👍 File already exists: {click.format_filename(file.filename)}")
+    if os.path.exists(file.fullPath) and not force:
+        click.echo(f"👍 File already exists: {click.format_filename(file.fullPath)}")
         return
-    click.echo(f"⏳ Generating file: {click.format_filename(file.filename)}")
+    click.echo(f"⏳ Generating file: {click.format_filename(file.fullPath)}")
     file.write(generate_file(file))
-    click.echo(f"🍺 File generated: {click.format_filename(file.filename)}")
+    click.echo(f"🍺 File generated: {click.format_filename(file.fullPath)}")
 
 if __name__ == '__main__':
     cli()

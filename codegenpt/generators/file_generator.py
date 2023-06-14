@@ -39,7 +39,7 @@ user_message_template = """\
 def generate_file(file: CodeGenPTFile):
     user_message = user_message_template.format(
         path=file.path,
-        basename=file.basename,
+        basename=file.filename,
         extension=file.extension,
         prompt=file.prompt
     )

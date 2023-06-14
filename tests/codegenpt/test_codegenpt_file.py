@@ -10,7 +10,7 @@ def test_file():
 
 
 def test_codegenpt_file(test_file: CodeGenPTFile):
-    assert test_file.filename == 'tests/test_files/test.py'
+    assert test_file.fullPath == 'tests/test_files/test.py'
 
 
 def test_codegenpt_file_extension(test_file: CodeGenPTFile):
@@ -27,12 +27,12 @@ def test_codegenpt_file_path(test_file: CodeGenPTFile):
 
 
 def test_codegenpt_file_basename(test_file: CodeGenPTFile):
-    assert test_file.basename == 'test.py'
+    assert test_file.filename == 'test.py'
 
 
 def test_codegenpt_file_context(test_file: CodeGenPTFile):
     assert test_file.context == {
-        'basename': 'test.py',
+        'filename': 'test.py',
         'extension': 'py',
         'path': ['tests', 'test_files'],
     }
