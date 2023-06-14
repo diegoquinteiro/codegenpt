@@ -1,4 +1,5 @@
 import os
+from threading import Thread
 import click
 from codegenpt.codegenpt_file import CodeGenPTFile
 
@@ -20,15 +21,23 @@ def codegenpt(recursive=True, force=True, path='.'):
     else:
         files = [CodeGenPTFile(path)]
     
-    for file in files:
-        if os.path.exists(file.filename) and not force:
-            click.echo(f"👍 File already exists: {click.format_filename(file.filename)}")
-            continue
-        click.echo(f"⏳ Generating file: {click.format_filename(file.filename)}")
-        file.write(generate_file(file))
-        click.echo(f"🍺 File generated: {click.format_filename(file.filename)}")
+    generation_threads = [Thread(target=generate, args=(file, force)) for file in files]
     
+    for thread in generation_threads:
+        thread.start()
+
+    for thread in generation_threads:
+        thread.join()
+
     click.echo(f"🍻 Success")
+
+def generate(file: CodeGenPTFile, force=True):
+    if os.path.exists(file.filename) and not force:
+        click.echo(f"👍 File already exists: {click.format_filename(file.filename)}")
+        return
+    click.echo(f"⏳ Generating file: {click.format_filename(file.filename)}")
+    file.write(generate_file(file))
+    click.echo(f"🍺 File generated: {click.format_filename(file.filename)}")
 
 if __name__ == '__main__':
     cli()
