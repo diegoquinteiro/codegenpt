@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 import os
 import openai
 from demjson3 import decode
@@ -21,7 +22,9 @@ def askLLM(messages, json=False, retries=3):
     if json:
         try:
             response = decode(response)
-        except ValueError:
+        except JSONDecodeError:
+            if retries == 0:
+                raise JSONDecodeError
             return askLLM(messages, json, retries - 1)
 
     return response

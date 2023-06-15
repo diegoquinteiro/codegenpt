@@ -8,7 +8,8 @@ import codegenpt.llm.llm
 @pytest.fixture(autouse=True)
 def setup(monkeypatch):
     # Mock LLM
-    # monkeypatch.setattr('codegenpt.generators.file_generator.askLLM', lambda messages: f'Respose for {messages}')
+    monkeypatch.setattr('codegenpt.generators.file_generator.askLLM', lambda messages: f'Respose for {messages}')
+    monkeypatch.setattr('codegenpt.generators.directory_generator.askLLM', lambda messages: f'Respose for {messages}')
 
     if (os.path.exists('tests/test_files/test.py')):
         os.remove('tests/test_files/test.py')

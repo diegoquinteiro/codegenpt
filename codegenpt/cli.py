@@ -12,13 +12,14 @@ from codegenpt.generators.file_generator import generate_file
 @click.command()
 @click.version_option()
 @click.option('--recursive', '-R', is_flag=True, default=False, help='Find .codegenpt files in directories recursevily.')
+@click.option('--iterations', '-i', default=3, help='Maximum iterations to run for generating files.')
 @click.option('--force', '-f', is_flag=True, default=False, help='Overwrite existing files with new ones.')
 @click.argument('path', default='.', type=click.Path(exists=True))
-def cli(recursive, force, path):
-    codegenpt(recursive=recursive, force=force, path=path)
+def cli(recursive=False, iterations=3, force=False, path='.'):
+    codegenpt(recursive=recursive, iterations=iterations, force=force, path=path)
 
 
-def codegenpt(recursive=True, force=True, path='.'):
+def codegenpt(recursive=True, iterations=1, force=True, path='.'):
     if os.path.isdir(path):
         click.echo(f"🔎 Searching files...")
         files = find_codegenpt_files(recursive=recursive, path=path)
@@ -32,13 +33,32 @@ def codegenpt(recursive=True, force=True, path='.'):
         else:
             files = [CodeGenPTFile(path)]
 
-    generation_threads = [Thread(target=generate_file_async, args=(file, force)) for file in files] + [
-        Thread(target=generate_directory_async, args=(directory, force)) for directory in directories]
+    file_generation_threads = [Thread(target=generate_file_async, args=(file, force)) for file in files]
+    directory_generation_threads = []
+    recursion_threads = []
+    thread_to_directory_mapping = {}
+    for directory in directories:
+        thread = Thread(target=generate_directory_async, args=(directory, force))
+        directory_generation_threads.append(thread)
+        thread_to_directory_mapping[thread.name] = directory
 
-    for thread in generation_threads:
+    for thread in file_generation_threads:
+        thread.start()
+    
+    for thread in directory_generation_threads:
         thread.start()
 
-    for thread in generation_threads:
+    for thread in directory_generation_threads:
+        thread.join()
+        if iterations > 1:
+            recursion_thread = Thread(target = codegenpt, kwargs={"recursive": True, "iterations": iterations -1, "force": force, "path": thread_to_directory_mapping[thread.name].fullPath})
+            recursion_thread.start()
+            recursion_threads.append(recursion_thread)
+
+    for thread in file_generation_threads:
+        thread.join()
+
+    for thread in recursion_threads:
         thread.join()
 
     click.echo(f"🍻 Success")

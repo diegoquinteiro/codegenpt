@@ -49,5 +49,6 @@ class CodeGenPTInstructions(ABC):
     def context(self):
         pass
 
-    def __init__(self, filename):
+    def __init__(self, filename, parent = None):
         self.instructions_filename = filename
+        self.parent = parent
