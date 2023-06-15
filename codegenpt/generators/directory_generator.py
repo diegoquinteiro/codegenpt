@@ -12,15 +12,20 @@ If the input starts with @generate, I'll provide instructions for the creation o
 a directory and you will output JSON listing the files and directories this directory should contain, \
 without any instructions or comments. Write filenames relative to the directory you're describing, without path. \
 
-Each file or directory in the list will have a name and a prompt that will be used to generate its content, \
-and such prompt can use the following command:
+Each file or directory in the list will have a name and a prompt that will be used to generate its content. \
 
-@include <filepath> - Read the contents of the another file with the given relative <filepath> to be \
-be added as context and referred in the prompt as @filepath. Use only to refer to files you've listed \
-or present in the context.
-
-You will list all files necessary, but you can include directory entries without children with a prompt for future generation.
-Write detailed prompts for what's necessary for files.
+- Only text files are supported, you cannot create images or other binary files.
+- Files will be small at 1000 words at maximum, so break them up in multiple files if necessary.
+- You will list all files necessary, but you can include directory entries without children with a prompt for future generation.
+- You will write detailed prompts for what's necessary for files. 
+- You will list the dependencies for each file and directory, and they will be generated before the file or directory that depends on them.
+    - The dependencies list should include the relative path to the file or directory.
+    - If a file content is relevant to generate the content of another file, you should include it as a dependency.
+        - For example, if you're generating a README.md file, you should include the main.py file as a dependency so the functionalities can be described.
+        - For example, if you're generating a test_main.py file, you should include the main.py file as a dependency so the tests can be written.
+        - For example, if you're generating a CSS file to style a html file, you should include the html file as a dependency so the CSS can be written. 
+    - You will not create circular dependencies
+    - You can reference dependencies in the prompt using @<dependency_path>, where <dependency_path> is the relative path to the dependency.
 
 The content of the JSON you'll respond will be automatically included in the context and can itself be referenced on prompts as @.codegenpt.json.
 
@@ -34,41 +39,62 @@ Hello!\
 Example input:
 @generate
 - Path: .
-- Name: quiz
-Create a command line quiz game using click.
+- Name: tic-tac-toe
+Create a tic-tac-toe game using HTML, CSS and JavaScript.
 
 Example output:
 {
-    "type": "directory",
-    "dirname": "quiz",
-    "prompt": "Create the root directory of a command line quiz game using click.",
-    "chidren": [
+    "children": [
         {
-            "type": "file",
-            "filename": "main.py",
-            "prompt": "Create the main file for the game.",
+            "filename": "index.html",
+            "prompt": "Create the HTML structure for the game.",
+            "type": "file"
         },
         {
-            "type": "file",
-            "filename": "pyproject.toml",
-            "prompt": "Configure the project using click as a dependecy.",
+            "filename": "style.css",
+            "dependencies": [
+                "index.html",
+                "game.js"
+            ],
+            "prompt": "Create the CSS styles for the tic-tac-toe board and other game elements.",
+            "type": "file"
         },
         {
-            "type": "file",
+            "filename": "game.js",
+            "dependencies": [
+                "index.html"
+            ],
+            "prompt": "Create the JS logic for the game. Include functions to check for win/loss, to switch turns and to draw the game board.",
+            "type": "file"
+        },
+        {
+            "dependencies": [
+                "index.html",
+                "game.js"
+            ],
             "filename": "README.md",
-            "prompt": "Create a README.md file for the project.",
+            "prompt": "Write instructions for playing the game.",
+            "type": "file"
         },
         {
-            "type": "file",
-            "filename": "quiz.json",
-            "prompt": "Create a JSON with 100 questions in the format: { "questions": [{ "question": ..., "answers": [...], "correct_answer_index": [...] }, ...] }",
-        },
-        {
-            "type": "directory",
+            "children": [
+                {
+                    "filename": "test_game.js",
+                    "dependencies": [
+                        "../game.js"
+                    ],
+                    "prompt": "Create tests for the function in @../game.js.",
+                    "type": "file"
+                }
+            ],
             "dirname": "tests",
-            "prompt": "Create a tests directory with tests for all .py files within the folders from @.codegenpt.json.",      
+            "prompt": "Create tests for the game logic.",
+            "type": "directory"
         }
-    ]
+    ],
+    "dirname": "tic-tac-toe",
+    "prompt": "Create a tic-tac-toe game using HTML, JS and CSS.",
+    "type": "directory"
 }\
 """
 

@@ -42,3 +42,7 @@ def test_codegenpt_file_commands(test_file: CodeGenPTFile):
     assert test_file.commands == [
         Command(name='include', arguments=['jokes.txt']),
     ]
+
+def test_codegenpt_file_dependencies(test_file: CodeGenPTFile):
+    dependencies = test_file.dependencies
+    assert dependencies == ['jokes.txt']

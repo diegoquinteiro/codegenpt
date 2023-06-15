@@ -3,6 +3,8 @@ from threading import Thread
 import click
 from codegenpt.codegenpt_directory import CodeGenPTDirectory
 from codegenpt.codegenpt_file import CodeGenPTFile
+from codegenpt.codegenpt_instructions import CodeGenPTInstructions
+from codegenpt.dependency_batch import batch_instructions_by_dependencies
 
 from codegenpt.filesystem.file_discovery import find_codegenpt_directories, find_codegenpt_files
 from codegenpt.generators.directory_generator import generate_directory
@@ -22,44 +24,46 @@ def cli(recursive=False, iterations=3, force=False, path='.'):
 def codegenpt(recursive=True, iterations=1, force=True, path='.'):
     if os.path.isdir(path):
         click.echo(f"🔎 Searching files...")
-        files = find_codegenpt_files(recursive=recursive, path=path)
-        directories = find_codegenpt_directories(
+        instructions = find_codegenpt_files(recursive=recursive, path=path) + find_codegenpt_directories(
             recursive=recursive, path=path)
     else:
-        files = []
-        directories = []
-        if path.endswith('.dir.codegenpt'):
-            directories = [CodeGenPTDirectory(path)]
+        if path.endswith(".dir.codegenpt"):
+            instructions = [CodeGenPTDirectory(path)]
+        elif path.endswith(".codegenpt"):
+            instructions = [CodeGenPTFile(path)]
         else:
-            files = [CodeGenPTFile(path)]
+            raise Exception("Path must be a directory or a .codegenpt file.")
 
-    file_generation_threads = [Thread(target=generate_file_async, args=(file, force)) for file in files]
-    directory_generation_threads = []
-    recursion_threads = []
-    thread_to_directory_mapping = {}
-    for directory in directories:
-        thread = Thread(target=generate_directory_async, args=(directory, force))
-        directory_generation_threads.append(thread)
-        thread_to_directory_mapping[thread.name] = directory
+    batches = batch_instructions_by_dependencies(instructions)
 
-    for thread in file_generation_threads:
-        thread.start()
-    
-    for thread in directory_generation_threads:
-        thread.start()
+    for batch in batches:
+        file_generation_threads = [Thread(target=generate_file_async, args=(file, force)) for file in batch if isinstance(file, CodeGenPTFile)]
+        directory_generation_threads = []
+        recursion_threads = []
+        thread_to_directory_mapping = {}
+        for directory in filter(lambda directory: isinstance(directory, CodeGenPTDirectory), batch):
+            thread = Thread(target=generate_directory_async, args=(directory, force))
+            directory_generation_threads.append(thread)
+            thread_to_directory_mapping[thread.name] = directory
 
-    for thread in directory_generation_threads:
-        thread.join()
-        if iterations > 1:
-            recursion_thread = Thread(target = codegenpt, kwargs={"recursive": True, "iterations": iterations -1, "force": force, "path": thread_to_directory_mapping[thread.name].fullPath})
-            recursion_thread.start()
-            recursion_threads.append(recursion_thread)
+        for thread in file_generation_threads:
+            thread.start()
+        
+        for thread in directory_generation_threads:
+            thread.start()
 
-    for thread in file_generation_threads:
-        thread.join()
+        for thread in directory_generation_threads:
+            thread.join()
+            if iterations > 1:
+                recursion_thread = Thread(target = codegenpt, kwargs={"recursive": True, "iterations": iterations -1, "force": force, "path": thread_to_directory_mapping[thread.name].fullPath})
+                recursion_thread.start()
+                recursion_threads.append(recursion_thread)
 
-    for thread in recursion_threads:
-        thread.join()
+        for thread in file_generation_threads:
+            thread.join()
+
+        for thread in recursion_threads:
+            thread.join()
 
     click.echo(f"🍻 Success")
 

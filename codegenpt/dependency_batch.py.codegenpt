@@ -1,0 +1,15 @@
+@include codegenpt_instructions.py
+
+Create a function with the following signature:
+
+def batch_instructions_by_dependencies(instructions: list[CodeGenPTInstructions]) -> list[list[CodeGenPT]]:
+
+The input of the function will be a list of CodeGenPTInstructions instances.
+
+The output will be an ordered list of lists of CodeGenPTInstructions instances. Each list will be a batch of CodeGenPTInstructions.
+
+The batches will be processed sequentially to generate files described in the fullPath property of the CodeGenPTInstructions instances.
+
+You will organize the list of batches to make sure that by the time we process a given batch, all dependencies from all the CodeGenPTInstructions instances in such batch have already been generated in previous batches or are existing files on the filesystem.
+
+The function should throw an exception if circular dependencies are found.

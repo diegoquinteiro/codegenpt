@@ -10,7 +10,7 @@ def find_codegenpt_files(path='', recursive=True):
         lambda filename: CodeGenPTFile(filename),
         filter(
             lambda filename: not filename.endswith('.dir.codegenpt'),
-            glob.glob(os.path.join(path, '**/*.codegenpt'), recursive=recursive)
+            glob.glob(os.path.join(path, '**/*.codegenpt' if recursive else '*.codegenpt'), recursive=recursive)
         )
     ))
 
@@ -18,5 +18,5 @@ def find_codegenpt_files(path='', recursive=True):
 def find_codegenpt_directories(path='', recursive=True):
     return list(map(
         lambda dirname: CodeGenPTDirectory(dirname),
-        glob.glob(os.path.join(path, '**/*.dir.codegenpt'), recursive=recursive)
+        glob.glob(os.path.join(path, '**/*.dir.codegenpt' if recursive else '*.dir.codegenpt'), recursive=recursive)
     ))
