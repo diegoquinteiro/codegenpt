@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "codegenpt"
-version = "0.6.1"
+version = "0.6.2"
 description = "Autogenerate files and folders using ChatGPT API"
 authors = ["Diego Quinteiro <diegoquinteiro@gmail.com>"]
 license = "MIT"
